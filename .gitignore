@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+*.env
+*.wav
+
+# VSCode
+.vscode/
+
+# Byte-compiled / optimized / DLL files
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+
+# Django/migrations
+**/migrations/
+
+# Node
+node_modules/
+.next/
+npm-debug.log*
+
+# Build output
+dist/
+build/
+
+# Dependency directories
+debate-frontend/node_modules/
+debate-frontend/.next/
+
+# Logs
+debug.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Optional IDE folders
+.idea/
