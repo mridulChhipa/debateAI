@@ -21,7 +21,6 @@ export default function Navbar() {
         { href: "/dashboard", label: "Dashboard" },
         { href: "/profile", label: "Profile" },
         { href: "/learning", label: "Learning" },
-        { href: "/realtime-debate", label: "Live Debate" },
     ];
 
     const linksToShow = authenticated ? linksLoggedIn : linksLoggedOut;
@@ -86,8 +85,8 @@ export default function Navbar() {
                                 key={href}
                                 href={href}
                                 className={`relative px-6 py-3 rounded-2xl font-semibold transition-all duration-200 group overflow-hidden ${pathname === href
-                                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
-                                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400"
+                                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
+                                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400"
                                     }`}
                             >
                                 <span className="relative z-10">{label}</span>
@@ -155,8 +154,8 @@ export default function Navbar() {
                                                 href={href}
                                                 onClick={() => setOpen(false)}
                                                 className={`block px-6 py-4 rounded-2xl font-semibold transition-all duration-200 ${pathname === href
-                                                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
-                                                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400"
+                                                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+                                                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400"
                                                     }`}
                                             >
                                                 {label}

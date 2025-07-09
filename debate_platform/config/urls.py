@@ -18,7 +18,6 @@ urlpatterns = [
     path('api/gamification/', include('gamification.api_urls')),  # Gamification endpoints
     path('api/sarvam/', include('sarvam_integration.api_urls')),  # Sarvam AI endpoints
     path('api/learning/', include('learning.api_urls')),
-    path('api/realtime-debate/', include('realtime_debate.api_urls')),
 ]
 
 # Serve media files in development

@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-l3i9(9rqbprd)n-*=sm_d&h_jd
 
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
 # Sarvam AI Configuration
 SARVAM_API_KEY = os.getenv('SARVAM_API_KEY')
@@ -30,76 +30,15 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'channels',
     
-    # Your apps
-    'authentication',      # Use full path
-    'debates',             # Use full path
-    'sarvam_integration',  # Use full path
-    'analytics',           # Use full path
+    'authentication',
+    'debates',
+    'sarvam_integration',
+    'analytics',
     'gamification',
     'learning',
-    'realtime_debate',
 ]
 
-ASGI_APPLICATION = 'config.asgi.application'
-
-REDIS_CLOUD_CONFIG = {
-    'host': 'redis-14243.crce206.ap-south-1-1.ec2.redns.redis-cloud.com',
-    'port': 14243,
-    'username': 'default',
-    'password': '4tuvX53iMP8zgDFAuQ2RJVe2uWuekPao',
-    'decode_responses': True,
-    'ssl': True,  # Redis Cloud typically uses SSL
-    'ssl_cert_reqs': None,
-}
-
-REDIS_URL = f"redis://{REDIS_CLOUD_CONFIG['username']}:{REDIS_CLOUD_CONFIG['password']}@{REDIS_CLOUD_CONFIG['host']}:{REDIS_CLOUD_CONFIG['port']}/0"
-REDIS_SSL_URL = f"rediss://{REDIS_CLOUD_CONFIG['username']}:{REDIS_CLOUD_CONFIG['password']}@{REDIS_CLOUD_CONFIG['host']}:{REDIS_CLOUD_CONFIG['port']}/0"
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [{
-                'address': (REDIS_CLOUD_CONFIG['host'], REDIS_CLOUD_CONFIG['port']),
-                'username': REDIS_CLOUD_CONFIG['username'],
-                'password': REDIS_CLOUD_CONFIG['password'],
-                'ssl': True,
-            }],
-            "expiry": 60,  # Messages expire after 60 seconds
-            "group_expiry": 86400,  # Groups expire after 24 hours
-            "capacity": 1000,  # Max messages per channel
-            "symmetric_encryption_keys": [os.getenv('REDIS_ENCRYPTION_KEY', 'your-secret-key-here')],
-        },
-    },
-}
-
-if DEBUG:
-    ALLOWED_HOSTS = ['*']
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-
-
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': REDIS_SSL_URL,
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            'CONNECTION_POOL_KWARGS': {
-                'ssl_cert_reqs': None,
-                'ssl_check_hostname': False,
-                'ssl': True,
-            },
-            'SERIALIZER': 'django_redis.serializers.json.JSONSerializer',
-            'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
-        }
-    }
-}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -110,6 +49,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Next.js dev server
+    # Add your production domain here
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -193,42 +137,33 @@ SESSION_COOKIE_AGE = 86400  # 24 hours
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-    },
     'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
         },
     },
     'loggers': {
-        'realtime_debate': {
-            'handlers': ['console'],
+        'sarvam_integration': {
+            'handlers': ['file', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
-        'channels': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'django.channels': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
+        'debates': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
             'propagate': True,
         },
     },
 }
-
 
 # AI Platform Specific Settings
 DEBATE_SETTINGS = {
@@ -241,15 +176,6 @@ DEBATE_SETTINGS = {
     'DEFAULT_LANGUAGE': 'en-IN',
     'AI_RESPONSE_TIMEOUT': 30,  # seconds
     'VOICE_UPLOAD_MAX_SIZE': 5 * 1024 * 1024,  # 5MB
-}
-
-REALTIME_DEBATE_SETTINGS = {
-    'MAX_AUDIO_CHUNK_SIZE': 1024 * 1024,  # 1MB per audio chunk
-    'AUDIO_SAMPLE_RATE': 16000,  # 16kHz
-    'SILENCE_THRESHOLD': 0.01,
-    'MAX_BUFFER_DURATION': 30.0,  # 30 seconds max buffer
-    'SESSION_TIMEOUT': 7200,  # 2 hours
-    'HEARTBEAT_INTERVAL': 30,  # 30 seconds
 }
 
 # Gamification Settings
@@ -289,7 +215,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=600),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
