@@ -31,10 +31,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     
-    'authentication',
-    'debates',
-    'sarvam_integration',
-    'analytics',
+    # Your apps
+    'authentication',      # Use full path
+    'debates',             # Use full path
+    'sarvam_integration',  # Use full path
+    'analytics',           # Use full path
     'gamification',
     'learning',
 ]

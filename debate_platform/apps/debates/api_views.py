@@ -126,8 +126,7 @@ class RecentSessionsView(generics.ListAPIView):
     def get_queryset(self):
         # Get recent 5 sessions for the authenticated user
         return DebateSession.objects.filter(
-            user=self.request.user,
-            # is_completed = False,
+            user=self.request.user
         ).select_related('topic').order_by('-started_at')[:5]
     
     def list(self, request, *args, **kwargs):
