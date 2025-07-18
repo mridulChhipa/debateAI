@@ -1,6 +1,6 @@
 # DebateAI - AI-Powered Debate Learning Platform
 
-[![Django](https://img.shields.io/badge/Django-4.2+-092E20?style=for-the-badge&logo=django&ps://img.shields.io/ps://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoticated AI-powered debate learning platform that helps users improve their argumentation skills through interactive debates with AI opponents, real-time voice conversations, and comprehensive feedback analysis.
+ AI-powered debate learning platform that helps users improve their argumentation skills through interactive debates with AI opponents, real-time voice conversations, and comprehensive feedback analysis.
 
 ## 🚀 Features
 
@@ -59,8 +59,8 @@
 
 ### **1. Clone the Repository**
 ```bash
-git clone https://github.com/yourusername/debateai-platform.git
-cd debateai-platform
+git clone https://github.com/mridulchhipa/debateai-platform.git
+cd debate-platform
 ```
 
 ### **2. Backend Setup**
