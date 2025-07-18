@@ -272,7 +272,7 @@ def voice_debate_view(request):
         student_transcript_translated = sarvam_service.translate_text(
             text=student_transcript, 
             target_language=detected_language
-        )
+        ) if not detected_language == 'en-IN' else { 'translated_text' : student_transcript }
 
         student_argument = Argument.objects.create(
             session=session,
@@ -303,7 +303,7 @@ def voice_debate_view(request):
         ai_response_text_translated = sarvam_service.translate_text(
             text=ai_response_text, 
             target_language=detected_language
-        )
+        ) if not detected_language == 'en-IN' else { 'translated_text' : ai_response_text }
         # Step 5: Save AI argument
         ai_argument = Argument.objects.create(
             session=session,

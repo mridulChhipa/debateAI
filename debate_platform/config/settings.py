@@ -14,7 +14,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-l3i9(9rqbprd)n-*=sm_d&h_jd
 
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
 # Sarvam AI Configuration
 SARVAM_API_KEY = os.getenv('SARVAM_API_KEY')
@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'channels',
     
     # Your apps
     'authentication',      # Use full path
@@ -38,8 +39,58 @@ INSTALLED_APPS = [
     'analytics',           # Use full path
     'gamification',
     'learning',
+    'realtime_debate',
 ]
 
+ASGI_APPLICATION = 'config.asgi.application'
+# Redis Cloud Configuration
+REDIS_CLOUD_HOST = os.getenv('REDIS_CLOUD_HOST', 'redis-14243.crce206.ap-south-1-1.ec2.redns.redis-cloud.com')
+REDIS_CLOUD_PORT = int(os.getenv('REDIS_CLOUD_PORT', '14243'))
+REDIS_CLOUD_USERNAME = os.getenv('REDIS_CLOUD_USERNAME', 'default')
+REDIS_CLOUD_PASSWORD = os.getenv('REDIS_CLOUD_PASSWORD', '4tuvX53iMP8zgDFAuQ2RJVe2uWuekPao')
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [{
+                'address': (REDIS_CLOUD_HOST, REDIS_CLOUD_PORT),
+                'username': REDIS_CLOUD_USERNAME,
+                'password': REDIS_CLOUD_PASSWORD,
+                'db': 0,
+            }],
+            "expiry": 60,
+            "group_expiry": 86400,
+        },
+    },
+}
+
+# Construct Redis URL for Redis Cloud
+REDIS_URL = f"redis://{REDIS_CLOUD_USERNAME}:{REDIS_CLOUD_PASSWORD}@{REDIS_CLOUD_HOST}:{REDIS_CLOUD_PORT}/0"
+
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': REDIS_URL,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'CONNECTION_POOL_KWARGS': {
+                'username': REDIS_CLOUD_USERNAME,
+                'password': REDIS_CLOUD_PASSWORD,
+                'decode_responses': True,
+            }
+        }
+    }
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -138,33 +189,42 @@ SESSION_COOKIE_AGE = 86400  # 24 hours
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
         },
+    },
+    'handlers': {
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
     },
     'loggers': {
-        'sarvam_integration': {
-            'handlers': ['file', 'console'],
+        'realtime_debate': {
+            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
         },
-        'debates': {
-            'handlers': ['file', 'console'],
-            'level': 'INFO',
+        'channels': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.channels': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
             'propagate': True,
         },
     },
 }
+
 
 # AI Platform Specific Settings
 DEBATE_SETTINGS = {
@@ -177,6 +237,15 @@ DEBATE_SETTINGS = {
     'DEFAULT_LANGUAGE': 'en-IN',
     'AI_RESPONSE_TIMEOUT': 30,  # seconds
     'VOICE_UPLOAD_MAX_SIZE': 5 * 1024 * 1024,  # 5MB
+}
+
+REALTIME_DEBATE_SETTINGS = {
+    'MAX_AUDIO_CHUNK_SIZE': 1024 * 1024,  # 1MB per audio chunk
+    'AUDIO_SAMPLE_RATE': 16000,  # 16kHz
+    'SILENCE_THRESHOLD': 0.01,
+    'MAX_BUFFER_DURATION': 30.0,  # 30 seconds max buffer
+    'SESSION_TIMEOUT': 7200,  # 2 hours
+    'HEARTBEAT_INTERVAL': 30,  # 30 seconds
 }
 
 # Gamification Settings

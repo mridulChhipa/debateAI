@@ -25,6 +25,9 @@ import { motion } from 'framer-motion';
 import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 
 export default function Dashboard() {
+    /* ------------------------------------------------------------------ */
+    /* state & helpers                                                    */
+    /* ------------------------------------------------------------------ */
     const router = useRouter();
     const { isLoading: authLoading } = useAuthRedirect('authRequired');
 
@@ -35,6 +38,9 @@ export default function Dashboard() {
     const [error, setError] = useState(null);
     const [profileError, setProfErr] = useState(null);
 
+    /* ------------------------------------------------------------------ */
+    /* data-fetch                                                         */
+    /* ------------------------------------------------------------------ */
     useEffect(() => {
         if (authLoading) return;
 
@@ -47,8 +53,10 @@ export default function Dashboard() {
                     getRecentSessions()
                 ]);
 
+                /* topics ----------------------------------------------------- */
                 if (tRes.status === 'fulfilled') setTopics(tRes.value);
 
+                /* profile ---------------------------------------------------- */
                 if (pRes.status === 'fulfilled') {
                     setProfile(pRes.value);
                     setProfErr(null);
@@ -66,6 +74,7 @@ export default function Dashboard() {
                     });
                 }
 
+                /* recent sessions ------------------------------------------- */
                 if (sRes.status === 'fulfilled') setSessions(sRes.value);
                 else setSessions([]);
 
@@ -78,6 +87,7 @@ export default function Dashboard() {
         })();
     }, [authLoading, router]);
 
+    /* completion redirect cleanup -------------------------------------- */
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         if (params.get('completed') === 'true') {
@@ -86,6 +96,9 @@ export default function Dashboard() {
         }
     }, []);
 
+    /* ------------------------------------------------------------------ */
+    /* loading / error guards                                             */
+    /* ------------------------------------------------------------------ */
     if (authLoading || loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -114,6 +127,9 @@ export default function Dashboard() {
         );
     }
 
+    /* ------------------------------------------------------------------ */
+    /* start-debate handler                                               */
+    /* ------------------------------------------------------------------ */
     const handleStartDebate = async topicId => {
         try {
             const res = await createDebateSession(topicId);
@@ -125,6 +141,9 @@ export default function Dashboard() {
         }
     };
 
+    /* ------------------------------------------------------------------ */
+    /* derived data                                                       */
+    /* ------------------------------------------------------------------ */
     const stats = [
         {
             title: 'Total Points',
@@ -146,6 +165,9 @@ export default function Dashboard() {
         }
     ];
 
+    /* ------------------------------------------------------------------ */
+    /* JSX                                                                */
+    /* ------------------------------------------------------------------ */
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
             <div className="max-w-7xl mt-20 mx-auto px-6 py-8">
@@ -162,6 +184,7 @@ export default function Dashboard() {
                     </motion.div>
                 )}
 
+                {/* greeting --------------------------------------------------- */}
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
                     <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                         Welcome, {profile.username}!
@@ -171,8 +194,13 @@ export default function Dashboard() {
                     </p>
                 </motion.div>
 
+                {/* main grid -------------------------------------------------- */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+                    {/* left column --------------------------------------------- */}
                     <div className="lg:col-span-3 space-y-8">
+
+                        {/* stats cards */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -203,6 +231,7 @@ export default function Dashboard() {
                             ))}
                         </motion.div>
 
+                        {/* topics list */}
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl">
@@ -264,6 +293,7 @@ export default function Dashboard() {
                         </motion.div>
                     </div>
 
+                    {/* right sidebar – recent sessions ------------------------- */}
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
                         <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg p-6 sticky top-24">
                             <div className="flex items-center gap-3 mb-6">
